@@ -7,5 +7,5 @@ filename = 'Puzzle-9x9-0401.txt'
 # filename = 'Puzzle-9x9-0000-Unsolvable.txt'
 
 puzzle = FileHandler.create_puzzle(filename)
-# puzzle.solve()
-puzzle.debugsolve()
+puzzle.solve()
+# puzzle.debugsolve()

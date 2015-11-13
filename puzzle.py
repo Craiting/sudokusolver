@@ -33,14 +33,19 @@ class Puzzle(object):
         return values
 
     def compare_possiblities(self, thecell): # this checks the possible values of all cells in the same index, it can maybe narrow down an answer
-        for c in thecell.possible_values:
-            answer = c
+        if thecell.possible_values != 'none':
+            check = thecell.possible_values
             for cell in self.cell_list:
-                if cell.section == thecell.section and type(cell.value) == int:
-                    if c in cell.possible_values:
-                        answer = False
-        if answer:
-            return answer
+                if cell.index != thecell.index and cell.possible_values != 'none':
+                    if cell.row == thecell.row or cell.col == thecell.col or cell.section == cell.section:
+                        # print [item for item in check if item not in cell.possible_values]
+                        check = [item for item in check if item not in cell.possible_values]
+            if len(check) == 1:
+                print 'found'
+                return check[0]
+            else:
+                return False
+        return False
 
     def get_solved(self):
         solved = True
@@ -74,18 +79,18 @@ class Puzzle(object):
                             pass
                     if len(cell.possible_values) == 1:
                         cell.value = cell.possible_values[0]
-                    if(self.compare_possiblities(cell) not False):
+                    if(self.compare_possiblities(cell) != False):
                         cell.value = self.compare_possiblities(cell)
                         cell.possible_values = [cell.value]
             temp_count += 1
-            if temp_count == 5000:
+            if temp_count == 20000:
                 # print '##################'
                 # for cell in self.cell_list:
                 #     print cell.possible_values
                 # print '##################'
                 break
-        # print 'solvable = ' + str(self.get_solved())
-        # self.show()
+        print 'solvable = ' + str(self.get_solved())
+        self.show()
         if self.get_solved():
             self.output_to_file()
 
