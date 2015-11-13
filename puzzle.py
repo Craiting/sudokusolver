@@ -32,20 +32,73 @@ class Puzzle(object):
                 values.append(cell.value)
         return values
 
-    def compare_possiblities(self, thecell): # this checks the possible values of all cells in the same index, it can maybe narrow down an answer
+    def eliminate_by_possibilities(self):
+        for cell in self.cell_list:
+            if cell.value == '-':
+                if(self.compare_possibilities(cell) != False):
+                    cell.value = self.compare_possibilities(cell)
+                    print 'found', cell.value, cell.index
+                    cell.possible_values = [cell.value]
+                    break
+
+    def compare_possibilities(self, thecell): # this checks the possible values of all cells in the same index, it can maybe narrow down an answer
         if thecell.possible_values != 'none':
-            check = thecell.possible_values
-            for cell in self.cell_list:
-                if cell.index != thecell.index and cell.possible_values != 'none':
-                    if cell.row == thecell.row or cell.col == thecell.col or cell.section == cell.section:
-                        # print [item for item in check if item not in cell.possible_values]
-                        check = [item for item in check if item not in cell.possible_values]
-            if len(check) == 1:
-                print 'found'
-                return check[0]
-            else:
-                return False
+            vals = self.compare_within_section(thecell)
+            if(len(vals) ==1):
+                # thecell.value = vals[0]
+                thecell.possible_values = vals
+            vals = self.compare_within_row(thecell)
+            if(len(vals) ==1):
+                # thecell.value = vals[0]
+                thecell.possible_values = vals
+            vals = self.compare_within_col(thecell)
+            if(len(vals) ==1):
+                # thecell.value = vals[0]
+                thecell.possible_values = vals
         return False
+
+    def compare_within_section(self, thecell):
+        check = thecell.possible_values
+        for cell in self.cell_list:
+            if cell.index != thecell.index and cell.possible_values != 'none':
+                if cell.section == thecell.section:
+                    if type(cell.value) == str:
+                        check = [item for item in check if item not in cell.possible_values]
+                        if len(check) == 0:
+                            break
+        if len(check) == 1:
+            return check
+        else:
+            return thecell.possible_values
+
+    def compare_within_row(self, thecell):
+        check = thecell.possible_values
+        for cell in self.cell_list:
+            if cell.index != thecell.index and cell.possible_values != 'none':
+                if cell.row == thecell.row:
+                    if type(cell.value) == str:
+                        check = [item for item in check if item not in cell.possible_values]
+                        if len(check) == 0:
+                            break
+        if len(check) == 1:
+            return check
+        else:
+            return thecell.possible_values
+
+    def compare_within_col(self, thecell):
+        check = thecell.possible_values
+        for cell in self.cell_list:
+            if cell.index != thecell.index and cell.possible_values != 'none':
+                if cell.col == thecell.col:
+                    if type(cell.value) == str:
+                        check = [item for item in check if item not in cell.possible_values]
+                        if len(check) == 0:
+                            break
+        if len(check) == 1:
+            return check
+        else:
+            return thecell.possible_values
+
 
     def get_solved(self):
         solved = True
@@ -55,6 +108,19 @@ class Puzzle(object):
         return solved
 
     def solve(self):
+        temp_count = 0
+        while (not self.get_solved()):
+            self.eliminate_by_surroundings()
+            self.eliminate_by_possibilities()
+            temp_count+=1
+            if temp_count >= 500:
+                break
+        print 'solvable = ' + str(self.get_solved())
+        self.show()
+        if self.get_solved():
+            self.output_to_file()
+
+    def eliminate_by_surroundings(self):
         temp_count = 0
         while (not self.get_solved()):
             for cell in self.cell_list:
@@ -79,46 +145,10 @@ class Puzzle(object):
                             pass
                     if len(cell.possible_values) == 1:
                         cell.value = cell.possible_values[0]
-                    if(self.compare_possiblities(cell) != False):
-                        cell.value = self.compare_possiblities(cell)
-                        cell.possible_values = [cell.value]
+                        break
             temp_count += 1
-            if temp_count == 20000:
-                # print '##################'
-                # for cell in self.cell_list:
-                #     print cell.possible_values
-                # print '##################'
+            if temp_count == self.size*self.size:
                 break
-        print 'solvable = ' + str(self.get_solved())
-        self.show()
-        if self.get_solved():
-            self.output_to_file()
-
-
-    def debugsolve(self):
-        for cell in self.cell_list:
-            if cell.value == '-':
-                samerow = self.get_same_row(cell.row)
-                for val in samerow:
-                    try:
-                        cell.possible_values.remove(val)
-                    except:
-                        pass
-                samecol = self.get_same_col(cell.col)
-                for val in samecol:
-                    try:
-                        cell.possible_values.remove(val)
-                    except:
-                        pass
-                samesection = self.get_same_section(cell.section)
-                for val in samesection:
-                    try:
-                        cell.possible_values.remove(val)
-                    except:
-                        pass
-                if len(cell.possible_values) == 1:
-                    cell.value = cell.possible_values[0]
-        self.show()
 
     def get_cell_by_index(self,row,col):
         for cell in self.cell_list:
