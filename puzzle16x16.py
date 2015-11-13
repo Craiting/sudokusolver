@@ -4,6 +4,10 @@ from cell import Cell
 
 class Puzzle16x16(Puzzle):
 
+    def __init__(self):
+        super(Puzzle16x16, self).__init__()
+        self.size = 16
+
     def create_cell(self, row, col, value):
         possible_values = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
         cell = Cell(row, col, value, possible_values)
