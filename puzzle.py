@@ -32,17 +32,28 @@ class Puzzle(object):
                 values.append(cell.value)
         return values
 
+    def compare_possiblities(self, thecell): # this checks the possible values of all cells in the same index, it can maybe narrow down an answer
+        for c in thecell.possible_values:
+            answer = c
+            for cell in self.cell_list:
+                if cell.section == thecell.section and type(cell.value) == int:
+                    if c in cell.possible_values:
+                        answer = False
+        if answer:
+            return answer
+
     def get_solved(self):
         solved = True
         for cell in self.cell_list:
-            if cell.value == 'X':
+            if cell.value == '-':
                 solved = False
         return solved
 
     def solve(self):
+        temp_count = 0
         while (not self.get_solved()):
             for cell in self.cell_list:
-                if cell.value == 'X':
+                if cell.value == '-':
                     samerow = self.get_same_row(cell.row)
                     for val in samerow:
                         try:
@@ -63,9 +74,62 @@ class Puzzle(object):
                             pass
                     if len(cell.possible_values) == 1:
                         cell.value = cell.possible_values[0]
-        print 'solved'
+                    if(self.compare_possiblities(cell) not False):
+                        cell.value = self.compare_possiblities(cell)
+                        cell.possible_values = [cell.value]
+            temp_count += 1
+            if temp_count == 5000:
+                # print '##################'
+                # for cell in self.cell_list:
+                #     print cell.possible_values
+                # print '##################'
+                break
+        # print 'solvable = ' + str(self.get_solved())
+        # self.show()
+        if self.get_solved():
+            self.output_to_file()
+
+
+    def debugsolve(self):
+        for cell in self.cell_list:
+            if cell.value == '-':
+                samerow = self.get_same_row(cell.row)
+                for val in samerow:
+                    try:
+                        cell.possible_values.remove(val)
+                    except:
+                        pass
+                samecol = self.get_same_col(cell.col)
+                for val in samecol:
+                    try:
+                        cell.possible_values.remove(val)
+                    except:
+                        pass
+                samesection = self.get_same_section(cell.section)
+                for val in samesection:
+                    try:
+                        cell.possible_values.remove(val)
+                    except:
+                        pass
+                if len(cell.possible_values) == 1:
+                    cell.value = cell.possible_values[0]
         self.show()
+
+    def get_cell_by_index(self,row,col):
+        for cell in self.cell_list:
+            ind = str(row) + ':' + str(col)
+            if ind == cell.index:
+                return cell
 
     def show(self):
         for i in range(0,self.size):
-            print self.get_same_row(i)
+            line = []
+            for j in range(0, self.size):
+                line.append(str(self.get_cell_by_index(i,j).value))
+            print line
+
+    def output_to_file(self):
+        filename = 'output.txt'
+        f = open(filename, 'w')
+        for i in range(0,self.size):
+            f.write(str(self.get_same_row(i))+'\n')

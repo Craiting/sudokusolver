@@ -10,6 +10,8 @@ class Puzzle4x4(Puzzle):
 
     def create_cell(self, row, col, value):
         possible_values = [1,2,3,4]
+        if value != '-':
+            possible_values = 'none'
         cell = Cell(row, col, value, possible_values)
         if row <= 1 and col <= 1:
             cell.section = 0
