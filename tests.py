@@ -67,9 +67,5 @@ class TestPuzzle(unittest.TestCase):
         self.assertEqual(8, cell.section)
         self.assertEqual(3, cell.value)
 
-
-
-
-
 if __name__ == '__main__':
     unittest.main()
