@@ -1,6 +1,8 @@
 import unittest
 from filehandler import FileHandler
 from puzzle import Puzzle
+from puzzle4x4 import Puzzle4x4
+from puzzle9x9 import Puzzle9x9
 
 class TestFileHandler(unittest.TestCase):
 
@@ -50,13 +52,20 @@ class TestPuzzle(unittest.TestCase):
         self.assertEqual([2,5,8,3,7], self.puzzle9x9.get_same_section(8))
 
     def test_create_cell(self):
-        cell4x4 = self.puzzle4x4.create_cell(1,3,'-')
-        self.assertEqual(1,cell4x4.row)
-        self.assertEqual(3,cell4x4.col)
-        self.assertEqual(2,cell4x4.section)
-        self.assertEqual([1,2,3,4],cell4x4.possible_values)
-        # cell4x4_value = self.puzzle4x4.create_cell(0,0,5)
-
+        puzzle = Puzzle4x4()
+        puzzle.create_cell(1,3,'-')
+        cell =  puzzle.cell_list[0]
+        self.assertEqual(1,cell.row)
+        self.assertEqual(3,cell.col)
+        self.assertEqual(1,cell.section)
+        self.assertEqual('-', cell.value)
+        puzzle2 = Puzzle9x9()
+        puzzle2.create_cell(8,7,3)
+        cell = puzzle2.cell_list[0]
+        self.assertEqual(8, cell.row)
+        self.assertEqual(7, cell.col)
+        self.assertEqual(8, cell.section)
+        self.assertEqual(3, cell.value)
 
 
 
