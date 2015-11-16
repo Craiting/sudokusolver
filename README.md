@@ -11,4 +11,8 @@ and an abstract method called create cell which creates a cell class specific to
 size of the puzzle. The create cell method is implemented in the puzzle4x4, puzzle9x9,
 etc subclasses of puzzle. The algorithm is encapsulated in the solve method and it
 works the same for all puzzle sizes because it follows the same methods to solve
-for each size puzzle.
+for each size puzzle. I used the strategy pattern for the file handler. I may have used
+some other patterns that I learned in class as well. 
+
+
+
